@@ -157,10 +157,12 @@ function TimeCard() {
     }
 
     return (
-        <div>
+        <div className="container">
             <NavBar />
-            <h1> Today: {dt} </h1>
-            <Form>
+            
+            <Form className="App"> 
+            
+            <h1 className="block"> Today: {dt} </h1>
                 <Form.Row>
                     <Form.Group as={Col} controlId="timeIn">
                         <Button variant="secondary" disabled={hasTimedIn} onClick={timeIn}> Time In </Button>

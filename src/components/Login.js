@@ -80,7 +80,7 @@ function Login() {
                         </Col>
                     </Form.Group> */}
 
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                    <Form.Group as={Row} controlId="formPlaintextPassword" className="block">
                         <Form.Label column sm="2">
                             Password
     </Form.Label>
