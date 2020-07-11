@@ -91,7 +91,7 @@ function Login() {
                     <Button className="mb2" onClick={submitEmployer}>Login</Button>
                 </Form>
             </Modal>
-            <div className="App">
+            <div className="login">
                 <Form.Check inline value="employee" name="type" label="Employee" type="radio" checked={type == "employee"} onChange={handleChange} />
                 <Form.Check inline value="employer" name="type" label="Employer" type="radio" checked={type == "employer"} onChange={handleChange} />
                 <Button onClick={isLogin}>Log in</Button>
