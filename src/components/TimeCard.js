@@ -29,7 +29,7 @@ function TimeCard() {
                 updates['/users/' + user.uid + '/email'] = user.email
                 updates['/users/' + user.uid + '/name'] = user.displayName
                 firebase.database().ref().update(updates)
-                
+
                 if (date == lastDate) {
                     setHasTimedIn(true);
                 }
@@ -40,13 +40,23 @@ function TimeCard() {
                 })
 
                 firebase.database().ref('users/' + user.uid + '/' + date + "/time_out").on('value', (snap) => {
-                    if (snap.val() != null)
-                        setTimedOut(snap.val());
+                    if (snap.val() != null) {
+                        setHasTimedOut(true)
+                        var h = String(snap.val().split(":")[0]).padStart(2, '0')
+                        var min = String(snap.val().split(":")[1]).padStart(2, '0')
+                        setTimedOut(h + ":" + min);
+                    }
+
                 })
 
                 firebase.database().ref('users/' + user.uid + '/' + date + "/time_in").on('value', (snap) => {
-                    if (snap.val() != null)
-                        setTimedIn(snap.val());
+                    if (snap.val() != null) {
+                        setHasTimedIn(true);
+                        var h = String(snap.val().split(":")[0]).padStart(2, '0')
+                        var min = String(snap.val().split(":")[1]).padStart(2, '0')
+                        setTimedIn(h + ":" + min);
+                    }
+
                 })
 
             })
@@ -61,7 +71,12 @@ function TimeCard() {
 
     useEffect(() => {
         let secTimer = setInterval(() => {
-            setDt(new Date().toLocaleString())
+            var today = new Date();
+            var date = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            var time = String(today.getHours()).padStart(2, '0') + ":" + String(today.getMinutes()).padStart(2, '0') + ":" + String(today.getSeconds()).padStart(2, '0');
+            var dateTime = date + ' ' + time;
+            setDt(dateTime)
+
         }, 1000)
 
         return () => clearInterval(secTimer);
@@ -106,24 +121,24 @@ function TimeCard() {
                     var time_out = today.getHours() + ":" + today.getMinutes();
                     updates['/users/' + user.uid + '/' + date + '/time_out'] = time_out
                     var time_in = ""
-                    firebase.database().ref('/users/' + user.uid + '/' + date + '/time_in').once('value', snap=>{
+                    firebase.database().ref('/users/' + user.uid + '/' + date + '/time_in').on('value', snap => {
                         time_in = snap.val();
                     })
 
                     var min = 0;
                     var hour = 0;
 
-                    if((time_out.split(':')[1] - time_in.split(':')[1]) < 0){
+                    if ((time_out.split(':')[1] - time_in.split(':')[1]) < 0) {
                         min = 60 + (time_out.split(':')[1] - time_in.split(':')[1])
                         hour = (time_out.split(':')[0] - time_in.split(':')[0]) - 1
                     }
-                    else{
+                    else {
                         min = time_out.split(':')[1] - time_in.split(':')[1]
                         hour = (time_out.split(':')[0] - time_in.split(':')[0])
                     }
-                    
+
                     updates['/users/' + user.uid + '/' + date + '/hours'] = hour
-                    updates['/users/' + user.uid + '/' + date + '/minutes'] = min 
+                    updates['/users/' + user.uid + '/' + date + '/minutes'] = min
 
                     firebase.database().ref().update(updates)
                 }
@@ -141,12 +156,26 @@ function TimeCard() {
 
                     var l = []
                     snap.forEach(child => {
-                        if (child.key != 'last_date' && child.key != 'email' && child.key != 'name' && child.key != 'formula' && child.key != 'wage')
+                        if (child.key != 'last_date' && child.key != 'email' && child.key != 'name' && child.key != 'formula' && child.key != 'wage') {
+                            var time_in = null
+                            var time_out = null
+                            if (child.val().time_in != null) {
+                                var h = String(child.val().time_in.split(":")[0]).padStart(2, '0')
+                                var min = String(child.val().time_in.split(":")[1]).padStart(2, '0')
+                                time_in = (h + ":" + min)
+                            }
+
+                            if (child.val().time_out != null) {
+                                h = String(child.val().time_out.split(":")[0]).padStart(2, '0')
+                                min = String(child.val().time_out.split(":")[1]).padStart(2, '0')
+                                time_out = (h + ":" + min)
+                            }
                             l.push({
                                 date: child.key,
-                                time_in: child.val().time_in,
-                                time_out: child.val().time_out
+                                time_in: time_in,
+                                time_out: time_out
                             })
+                        }
 
                     })
                     setList(l.reverse())
@@ -157,49 +186,55 @@ function TimeCard() {
     }
 
     return (
-        <div className="container">
+        <div >
             <NavBar />
-            
-            <Form className="App"> 
-            
-            <h1 className="block"> Today: {dt} </h1>
-                <Form.Row>
-                    <Form.Group as={Col} controlId="timeIn">
+            <div className="App">
+                <h1 className="block"> Time: {dt} </h1>
+            </div>
+            <Form className="table_field">
+
+                <Form className="align">
+                    <Form.Group controlId="timeIn">
                         <Button variant="secondary" disabled={hasTimedIn} onClick={timeIn}> Time In </Button>
                         <Form.Label><h4>: {timedIn}</h4></Form.Label>
                     </Form.Group>
 
-                    <Form.Group as={Col} controlId="timeOut">
+                    <Form.Group controlId="timeOut">
                         <Button variant="secondary" disabled={hasTimedOut} onClick={timeOut}> Time Out </Button>
                         <Form.Label><h4>: {timedOut}</h4></Form.Label>
                     </Form.Group>
-                </Form.Row>
+                </Form>
             </Form>
             {/* <Button variant="secondary" disabled={hasTimedIn} onClick={timeIn}> Time In </Button>
             <Button variant="secondary" disabled={hasTimedOut} onClick={timeOut}> Time Out </Button> */}
-            <Button variant="secondary" onClick={display}> Show history </Button>
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time in</th>
-                        <th>Time out</th>
-                    </tr>
-                </thead>
-                <tbody>
 
-                    {list.map(item => (
-                        <tr>
-                            <td>{item.date}</td>
-                            <td>{item.time_in}</td>
-                            <td>{item.time_out}</td>
-                        </tr>
+            <div className="App">
+                <div className="table_field">
+                    <Button variant="outline-success" onClick={display}> Show history </Button>
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time in</th>
+                                <th>Time out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                    ))}
+                            {list.map(item => (
+                                <tr>
+                                    <td>{item.date}</td>
+                                    <td>{item.time_in}</td>
+                                    <td>{item.time_out}</td>
+                                </tr>
 
-                </tbody>
-            </table>
+                            ))}
 
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
         </div>
     )
 }

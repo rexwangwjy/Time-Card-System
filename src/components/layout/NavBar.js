@@ -25,12 +25,12 @@ function NavBar(){
     return (
         <div>
         
-        <Navbar bg="light" expand="lg">
+        <Navbar bg="dark" variant="dark" expand="lg">
             <Navbar.Brand >Time Card</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse className="justify-content-end">
             {/* <Button variant="outline-success" onClick = {signin}>Sign In</Button> */}
-            <Button variant="outline-danger" onClick = {signout}>Sign Out</Button>
+            <Button variant="danger" onClick = {signout}>Sign Out</Button>
             {/* <SignedInLink />
             <SignedOutLink /> */}
                 

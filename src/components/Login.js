@@ -49,7 +49,7 @@ function Login() {
             //     })
             history.push('/PayFormula')
         }
-        else{
+        else {
             setModal(false)
             alert("Employer password was wrong")
         }
@@ -57,9 +57,9 @@ function Login() {
     }
 
     const handleChange = e => {
-        if(e.target.name == 'type')
+        if (e.target.name == 'type')
             setType(e.target.value)
-        if(e.target.name == 'password')
+        if (e.target.name == 'password')
             setPassword(e.target.value)
     }
     // function signin() {
@@ -70,7 +70,7 @@ function Login() {
         <div className='home_bg' >
             <Modal onHide={() => { setModal(false) }} show={modal} className="App">
                 <Modal.Header closeButton > <h4>Employer Login </h4></Modal.Header>
-                <Form>
+                <Form className="table_field">
                     {/* <Form.Group as={Row} controlId="formPlaintextEmail">
                         <Form.Label column sm="2">
                             Email
@@ -81,20 +81,20 @@ function Login() {
                     </Form.Group> */}
 
                     <Form.Group as={Row} controlId="formPlaintextPassword" className="block">
-                        <Form.Label column sm="2">
-                            Password
+                        <Form.Label >
+                            Password:
     </Form.Label>
-                        <Col sm="10">
+                        
                             <Form.Control onChange={handleChange} name="password" type="password" placeholder="Password" />
-                        </Col>
+                        
                     </Form.Group>
                     <Button className="mb2" onClick={submitEmployer}>Login</Button>
                 </Form>
             </Modal>
             <div className="App">
-            <Form.Check inline value="employee" name="type" label="Employee" type="radio" checked={type == "employee"} onChange={handleChange} />
-            <Form.Check inline value="employer" name="type" label="Employer" type="radio" checked={type == "employer"} onChange={handleChange} />
-            <Button onClick={isLogin}>Log in</Button>
+                <Form.Check inline value="employee" name="type" label="Employee" type="radio" checked={type == "employee"} onChange={handleChange} />
+                <Form.Check inline value="employer" name="type" label="Employer" type="radio" checked={type == "employer"} onChange={handleChange} />
+                <Button onClick={isLogin}>Log in</Button>
             </div>
 
         </div>

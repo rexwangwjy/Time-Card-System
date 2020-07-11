@@ -18,10 +18,14 @@ function PayFormula() {
     const [payAll, setPayAll] = useState("")
 
     const [uid, setUid] = useState("")
-    const [name, setName] = useState("")
+    const [uname, setUname] = useState("")
+    const [email, setEmail] = useState("")
     const [wageAll, setWageAll] = useState("")
     const [wage, setWage] = useState("")
 
+    const [timeIn, setTimeIn] = useState("")
+    const [timeOut, setTimeOut] = useState("")
+    const [name, setName] = useState("")
     const [currFormula, setCurrFormula] = useState()
     const [currWage, setCurrWage] = useState()
 
@@ -37,6 +41,8 @@ function PayFormula() {
         }
 
     })
+
+
 
     const closeChangeFormula = () => {
         setChangeFormula(false)
@@ -54,9 +60,24 @@ function PayFormula() {
             setCurrFormula(snap.val())
         })
 
+        firebase.database().ref('users/' + id + '/name').once('value').then(snap => {
+            setUname(snap.val())
+        })
+
+        firebase.database().ref('users/' + id + '/email').once('value').then(snap => {
+            setEmail(snap.val())
+        })
+
         firebase.database().ref('users/' + id + '/wage').once('value').then(snap => {
-            console.log(snap.val())
             setCurrWage(snap.val())
+        })
+
+        firebase.database().ref('users/' + id + '/' + date + '/time_in').once('value').then(snap => {
+            setTimeIn(snap.val())
+        })
+
+        firebase.database().ref('users/' + id + '/' + date + '/time_out').once('value').then(snap => {
+            setTimeOut(snap.val())
         })
 
 
@@ -69,9 +90,9 @@ function PayFormula() {
 
     const handleFormula = () => {
         var updates = {}
-        if(formula != "")
+        if (formula != "")
             updates['users/' + uid + '/formula'] = formula
-        if(wage != "")
+        if (wage != "")
             updates['users/' + uid + '/wage'] = wage
         firebase.database().ref().update(updates)
 
@@ -137,7 +158,7 @@ function PayFormula() {
                             parser.set('min', u.val().minutes)
                             parser.set('wage', child.val().wage)
                             pay = parser.evaluate(String(child.val().formula))
-                            duration = u.val().hours + "h" + u.val().minutes + "min"
+                            duration = u.val().hours + " hr " + u.val().minutes + " min"
                         }
 
                         l.push({
@@ -161,21 +182,21 @@ function PayFormula() {
     }
 
     return (
-        <div className="container">
+        <div className="App">
             <NavBar />
-            <Form>
-                <Form.Row>
-                    <Form.Group as={Col}>
-                        <Form.Control type="date" name="date" onChange={handleChange} />
-                    </Form.Group>
-                </Form.Row>
-            </Form>
 
-            <Row>
-                <Col md={{ span: 4 }}><Button variant="secondary" name="cond" onClick={display}> Show history </Button></Col>
-                <Col md={{ span: 4, offset: 4 }}> <Button onClick={handleChangeFormulaAll}>Change formula for all</Button>
-                </Col>
-            </Row>
+            <div className="input_field">
+                <h4>Select date:</h4>
+                <InputGroup>
+
+                    <Form.Control type="date" name="date" onChange={handleChange} />
+                    <InputGroup.Append>
+                        <Button defaultValue={new Date()} variant="secondary" name="cond" onClick={display}> Show history </Button>
+                    </InputGroup.Append>
+
+                </InputGroup>
+            </div>
+          
 
 
             {/* <Modal show={changeFormulaAll} onHide={handleChangeFormulaAll} className="container">
@@ -187,8 +208,8 @@ function PayFormula() {
             </Modal> */}
 
 
-            <Modal show={changeFormulaAll} onHide={handleChangeFormulaAll} className="container">
-                <Modal.Header closeButton><h3>Modify formula for all</h3>    </Modal.Header>
+            <Modal show={changeFormulaAll} onHide={handleChangeFormulaAll} className="App">
+                <Modal.Header closeButton><h5>Note: all employees will be modified</h5></Modal.Header>
                 <Form>
                     <InputGroup className="mb-2 mr-sm-2">
 
@@ -210,26 +231,34 @@ function PayFormula() {
                 </Form>
 
 
-                <Button onClick={handleFormulaAll}>Submit</Button>
+                <Button onClick={handleFormulaAll}>Update</Button>
             </Modal>
 
 
-            <Modal show={changeFormula} onHide={closeChangeFormula} className="container">
-                <Modal.Header closeButton><h3>{`Modify:${name}'s formula`}</h3>    </Modal.Header>
-
-                <Form className="align">
-
-
+            <Modal show={changeFormula} onHide={closeChangeFormula} >
+                <Modal.Header closeButton><h4>{uname} <br />
+                    {email} </h4> </Modal.Header>
+                <div className="input_field">
+                    <Form className="align">
                     <Form.Group>
-                        <Form.Label>Current formula: {currFormula}</Form.Label>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Current wage: {currWage}</Form.Label>
-                    </Form.Group>
+                            <Form.Label>Date: {date}</Form.Label>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Time in: {timeIn}</Form.Label>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Time out: {timeOut}</Form.Label>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Formula: {currFormula}</Form.Label>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Wage: {currWage}</Form.Label>
+                        </Form.Group>
+                    </Form>
 
-                </Form>
-
-
+                </div>
+                <Modal.Header><h4>Update:</h4></Modal.Header>
                 <Form>
                     <InputGroup className="mb-2 mr-sm-2">
                         <InputGroup.Prepend>
@@ -245,40 +274,34 @@ function PayFormula() {
                         <Form.Control placeholder="Only wage, hour, min, +,  -,  * and  / are allowed" name="formula" onChange={handleChange} />
 
                     </InputGroup>
-
-
                 </Form>
 
 
-                <Button onClick={handleFormula}>Submit</Button>
+                <Button onClick={handleFormula}>Update</Button>
             </Modal>
 
 
-
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Time in</th>
-                        <th>Time out</th>
-                        <th>Duration</th>
-                        {/* <th>wage</th> */}
-                        <th>Actual pay</th>
-                        <th>Formula</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-
-                    {list.map((item, ind) => (
+            <div className="table_field">
+                <table className="table table-striped">
+                    <thead>
                         <tr>
-                            <td>{item.name}</td>
-                            <td>{item.email}</td>
-                            <td>{item.time_in}</td>
-                            <td>{item.time_out}</td>
-                            <td>{item.duration}</td>
-                            {/* <td>
+                            <th>Name</th>
+
+                            <th>Duration</th>
+                            {/* <th>wage</th> */}
+                            <th>Pay</th>
+                            <th>Detail</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {list.map((item, ind) => (
+                            <tr>
+                                <td>{item.name}</td>
+
+                                <td>{item.duration}</td>
+                                {/* <td>
                                 <InputGroup>
                                     <Form.Control />
                                     <InputGroup.Append>
@@ -286,17 +309,22 @@ function PayFormula() {
                                     </InputGroup.Append>
                                 </InputGroup>
                             </td> */}
-                            <td>{item.pay}</td>
-                            <td><Button onClick={handleChangeFormula} id={item.uid} name={item.name}>view formula</Button></td>
-                        </tr>
+                                <td>{item.pay}</td>
+                                <td><Button onClick={handleChangeFormula} id={item.uid} name={item.name}>view details</Button></td>
+                            </tr>
 
-                    ))}
+                        ))}
 
-                </tbody>
-            </table>
-
-
-
+                    </tbody>
+                </table>
+            </div>
+        
+            <div className="table_field">
+                <Row>
+                    <Col md={{ span: 4, offset: 4 }}> <Button variant="outline-success" onClick={handleChangeFormulaAll}>Set default formula</Button>
+                    </Col>
+                </Row>
+            </div>
         </div>
     )
 }
