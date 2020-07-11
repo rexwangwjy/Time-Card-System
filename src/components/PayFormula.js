@@ -190,11 +190,10 @@ function PayFormula() {
                 <InputGroup>
 
                     <Form.Control type="date" name="date" onChange={handleChange} />
-                    <InputGroup.Append>
-                        <Button defaultValue={new Date()} variant="secondary" name="cond" onClick={display}> Show history </Button>
-                    </InputGroup.Append>
+                    
 
                 </InputGroup>
+                <Button defaultValue={new Date()} variant="secondary" name="cond" onClick={display}> Show history </Button>
             </div>
           
 
