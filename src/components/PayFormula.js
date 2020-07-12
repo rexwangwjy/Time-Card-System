@@ -73,11 +73,25 @@ function PayFormula() {
         })
 
         firebase.database().ref('users/' + id + '/' + date + '/time_in').once('value').then(snap => {
-            setTimeIn(snap.val())
+            var time_in = null
+            if (snap.val() != null) {
+                var h = String(snap.val().split(":")[0]).padStart(2, '0')
+                var min = String(snap.val().split(":")[1]).padStart(2, '0')
+                time_in = (h + ":" + min)
+                setTimeIn(time_in)
+            }
+            
         })
 
         firebase.database().ref('users/' + id + '/' + date + '/time_out').once('value').then(snap => {
-            setTimeOut(snap.val())
+            var time_out = null
+            if (snap.val() != null) {
+                var h = String(snap.val().split(":")[0]).padStart(2, '0')
+                var min = String(snap.val().split(":")[1]).padStart(2, '0')
+                time_out = (h + ":" + min)
+                setTimeOut(time_out)
+            }
+            
         })
 
 
@@ -163,9 +177,6 @@ function PayFormula() {
 
                         l.push({
                             name: child.val().name,
-                            email: child.val().email,
-                            time_in: u.val().time_in,
-                            time_out: u.val().time_out,
                             duration: duration,
                             pay: pay,
                             uid: child.key
@@ -190,12 +201,12 @@ function PayFormula() {
                 <InputGroup>
 
                     <Form.Control type="date" name="date" onChange={handleChange} />
-                    
+
 
                 </InputGroup>
                 <Button defaultValue={new Date()} variant="secondary" name="cond" onClick={display}> Show history </Button>
             </div>
-          
+
 
 
             {/* <Modal show={changeFormulaAll} onHide={handleChangeFormulaAll} className="container">
@@ -239,7 +250,7 @@ function PayFormula() {
                     {email} </h4> </Modal.Header>
                 <div className="input_field">
                     <Form className="align">
-                    <Form.Group>
+                        <Form.Group>
                             <Form.Label>Date: {date}</Form.Label>
                         </Form.Group>
                         <Form.Group>
@@ -317,7 +328,7 @@ function PayFormula() {
                     </tbody>
                 </table>
             </div>
-        
+
             <div className="table_field">
                 <Row>
                     <Col md={{ span: 4, offset: 4 }}> <Button variant="outline-success" onClick={handleChangeFormulaAll}>Set default formula</Button>

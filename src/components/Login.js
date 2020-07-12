@@ -36,23 +36,17 @@ function Login() {
 
     const submitEmployer = () => {
         console.log(password)
-        if (password == '5566') {
-            // var provider = new firebase.auth.GoogleAuthProvider();
-            // firebase.auth().signInWithPopup(provider)
-            //     .then(res => {
-            //         console.log(res.user.displayName)
-            //         console.log(firebase.auth().currentUser.uid)
-            //         history.push('/PayFormula')
-            //     })
-            //     .catch(err => {
-            //         console.log("failed to login")
-            //     })
-            history.push('/PayFormula')
-        }
-        else {
-            setModal(false)
-            alert("Employer password was wrong")
-        }
+        firebase.database().ref('employer_password').once('value', snap => {
+            if(snap.val() == null){
+                alert("no password has been set")
+            }
+            else if(snap.val() == password)
+                history.push('/PayFormula')
+            else {
+                setModal(false)
+                alert("Employer password was wrong")
+            }
+        })
 
     }
 
@@ -84,9 +78,9 @@ function Login() {
                         <Form.Label >
                             Password:
     </Form.Label>
-                        
-                            <Form.Control onChange={handleChange} name="password" type="password" placeholder="Password" />
-                        
+
+                        <Form.Control onChange={handleChange} name="password" type="password" placeholder="Password" />
+
                     </Form.Group>
                     <Button className="mb2" onClick={submitEmployer}>Login</Button>
                 </Form>

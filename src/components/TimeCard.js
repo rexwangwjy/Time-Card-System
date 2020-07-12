@@ -166,9 +166,9 @@ function TimeCard() {
                             }
 
                             if (child.val().time_out != null) {
-                                h = String(child.val().time_out.split(":")[0]).padStart(2, '0')
-                                min = String(child.val().time_out.split(":")[1]).padStart(2, '0')
-                                time_out = (h + ":" + min)
+                                var h_ = String(child.val().time_out.split(":")[0]).padStart(2, '0')
+                                var min_ = String(child.val().time_out.split(":")[1]).padStart(2, '0')
+                                time_out = (h_ + ":" + min_)
                             }
                             l.push({
                                 date: child.key,
